@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .search-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .search-button {
+            padding: 8px 15px;
+            background-color: #e30000;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .forum-list-container {
+            max-height: 400px; /* Set the maximum height of the container */
+            overflow-y: auto; /* Enable vertical scrollbar */
+        }
+
+        .forum-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .forum-item {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .forum-item h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .forum-item p {
+            margin-top: 0;
+            color: #666;
+        }
+
+        .add-post-form {
+            margin-bottom: 20px;
+        }
+
+        .add-post-form textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            resize: vertical;
+        }
+
+        .add-post-form button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Union Organization Forum</h1>
+    </div>
+
+    <div class="container">
+        <div class="search-container">
+            <form action="/search" method="GET">
+                <input type="text" placeholder="Search.." name="search" class="search-input">
+                <button type="submit" class="search-button">Search</button>
+            </form>
+        </div>
+
+        <div class="add-post-form">
+            <form id="postForm">
+                <textarea id="postContent" rows="4" placeholder="Write your post here..."></textarea>
+                <br>
+                <button type="submit">Post</button>
+            </form>
+        </div>
+
+        <div class="forum-list-container">
+            <ul class="forum-list" id="forumList">
+                <!-- Existing forum items will be added dynamically -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("postForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            var postContent = document.getElementById("postContent").value;
+            if (postContent.trim() !== "") {
+                addPost(postContent);
+                document.getElementById("postContent").value = "";
+            } else {
+                alert("Please enter some content for your post.");
+            }
+        });
+
+        function addPost(content) {
+            var forumList = document.getElementById("forumList");
+            var listItem = document.createElement("li");
+            listItem.classList.add("forum-item");
+            listItem.innerHTML = `
+                <h2>New Post</h2>
+                <p>${content}</p>
+            `;
+            forumList.appendChild(listItem);
+        }
+    </script>
+
+</body>
+</html>
