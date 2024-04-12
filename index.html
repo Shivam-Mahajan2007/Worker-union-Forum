@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forum</title>
     <style>
-        <body> {
+        body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
@@ -99,8 +99,27 @@
             cursor: pointer;
             font-size: 16px;
         }
+
+        .like-button, .dislike-button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 5px 10px;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+        .like-button:hover, .dislike-button:hover {
+            background-color: #0056b3;
+        }
+
+        .like-count, .dislike-count {
+            margin-left: 10px;
+            color: #666;
+        }
     </style>
-</body>
 </head>
 <body>
 
@@ -110,8 +129,8 @@
 
     <div class="container">
         <div class="search-container">
-            <form action="/search" method="GET">
-                <input type="text" placeholder="Search.." name="search" class="search-input">
+            <form id="searchForm" action="#" method="GET">
+                <input type="text" placeholder="Search.." name="search" id="searchInput" class="search-input">
                 <button type="submit" class="search-button">Search</button>
             </form>
         </div>
@@ -129,6 +148,8 @@
                 <!-- Existing forum items will be added dynamically -->
             </ul>
         </div>
+
+        <div class="search-results" id="searchResults"></div>
     </div>
 
     <script>
@@ -150,8 +171,54 @@
             listItem.innerHTML = `
                 <h2>New Post</h2>
                 <p>${content}</p>
+                <button class="like-button" onclick="likePost(this)">Like</button>
+                <span class="like-count">0</span>
+                <button class="dislike-button" onclick="dislikePost(this)">Dislike</button>
+                <span class="dislike-count">0</span>
             `;
             forumList.appendChild(listItem);
+        }
+        
+        
+
+        function likePost(button) {
+            var likeCount = button.nextElementSibling;
+            likeCount.textContent = parseInt(likeCount.textContent) + 1;
+        }
+
+        function dislikePost(button) {
+            var dislikeCount = button.previousElementSibling;
+            dislikeCount.textContent = parseInt(dislikeCount.textContent) + 1;
+        }
+
+        document.getElementById('searchForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            var searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            var elements = document.querySelectorAll('.forum-item'); // Get all elements with class .forum-item
+
+            var matches = [];
+            elements.forEach(function(element) {
+                var text = element.innerText.toLowerCase(); // Convert inner text to lowercase for case-insensitive search
+                if (text.includes(searchTerm)) {
+                    matches.push(element.outerHTML); // Save the matching HTML content
+                }
+            });
+
+            displaySearchResults(matches);
+        });
+
+        function displaySearchResults(results) {
+            var searchResultsDiv = document.getElementById('searchResults');
+            searchResultsDiv.innerHTML = ''; // Clear previous results
+
+            if (results.length === 0) {
+                searchResultsDiv.innerHTML = '<p>No results found</p>';
+            } else {
+                results.forEach(function(result) {
+                    searchResultsDiv.innerHTML += result;
+                });
+            }
         }
     </script>
 
