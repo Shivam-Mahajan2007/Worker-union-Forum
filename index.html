@@ -90,7 +90,15 @@
             resize: vertical;
         }
 
-        .add-post-form button {
+        .add-post-form input[type="text"] {
+            width: calc(100% - 80px); /* Adjust width to accommodate the button */
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .add-post-form button[type="submit"] {
             padding: 8px 15px;
             background-color: #4CAF50;
             color: #fff;
@@ -100,24 +108,59 @@
             font-size: 16px;
         }
 
-        .like-button, .dislike-button {
+        .comment-button {
+            padding: 8px 15px;
             background-color: #007bff;
             color: #fff;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            padding: 5px 10px;
-            margin-right: 10px;
-            font-size: 14px;
+            font-size: 16px;
         }
 
-        .like-button:hover, .dislike-button:hover {
-            background-color: #0056b3;
+        .like-button, .dislike-button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
         }
 
-        .like-count, .dislike-count {
-            margin-left: 10px;
-            color: #666;
+        .like-button {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .dislike-button {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .comment-box {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .comment-box textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            resize: vertical;
+        }
+
+        .comment-box button {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .search-results {
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -137,6 +180,7 @@
 
         <div class="add-post-form">
             <form id="postForm">
+                <input type="text" id="postTitle" placeholder="Title">
                 <textarea id="postContent" rows="4" placeholder="Write your post here..."></textarea>
                 <br>
                 <button type="submit">Post</button>
@@ -155,40 +199,66 @@
     <script>
         document.getElementById("postForm").addEventListener("submit", function(event) {
             event.preventDefault();
+            var postTitle = document.getElementById("postTitle").value;
             var postContent = document.getElementById("postContent").value;
             if (postContent.trim() !== "") {
-                addPost(postContent);
+                addPost(postTitle, postContent);
+                document.getElementById("postTitle").value = "";
                 document.getElementById("postContent").value = "";
             } else {
                 alert("Please enter some content for your post.");
             }
         });
 
-        function addPost(content) {
+        function addPost(title, content) {
             var forumList = document.getElementById("forumList");
             var listItem = document.createElement("li");
             listItem.classList.add("forum-item");
             listItem.innerHTML = `
-                <h2>New Post</h2>
+                <h2>${title}</h2>
                 <p>${content}</p>
+                <button class="comment-button" onclick="toggleCommentBox(this)">Comment</button>
+                <div class="comment-box">
+                    <textarea placeholder="Write your comment here..."></textarea>
+                    <button onclick="postComment(this)">Post Comment</button>
+                </div>
                 <button class="like-button" onclick="likePost(this)">Like</button>
-                <span class="like-count">0</span>
                 <button class="dislike-button" onclick="dislikePost(this)">Dislike</button>
-                <span class="dislike-count">0</span>
+                <span class="like-count">0</span> Likes
+                <span class="dislike-count">0</span> Dislikes
             `;
             forumList.appendChild(listItem);
         }
-        
-        
+
+        function toggleCommentBox(button) {
+            var commentBox = button.nextElementSibling;
+            commentBox.style.display = commentBox.style.display === "none" ? "block" : "none";
+        }
+
+        function postComment(button) {
+            var commentTextArea = button.previousElementSibling;
+            var commentContent = commentTextArea.value;
+            if (commentContent.trim() !== "") {
+                // You can implement the logic to add the comment here
+                commentTextArea.value = "";
+                toggleCommentBox(button); // Hide the comment box after posting
+            } else {
+                alert("Please enter some content for your comment.");
+            }
+        }
 
         function likePost(button) {
-            var likeCount = button.nextElementSibling;
-            likeCount.textContent = parseInt(likeCount.textContent) + 1;
+            var likeCount = button.parentElement.querySelector(".like-count");
+            var likeValue = parseInt(likeCount.textContent);
+            likeCount.textContent = likeValue + 1;
+            button.disabled = true;
         }
 
         function dislikePost(button) {
-            var dislikeCount = button.previousElementSibling;
-            dislikeCount.textContent = parseInt(dislikeCount.textContent) + 1;
+            var dislikeCount = button.parentElement.querySelector(".dislike-count");
+            var dislikeValue = parseInt(dislikeCount.textContent);
+            dislikeCount.textContent = dislikeValue + 1;
+            button.disabled = true;
         }
 
         document.getElementById('searchForm').addEventListener('submit', function(event) {
