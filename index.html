@@ -7,14 +7,15 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: black;
+            color: white;
             margin: 0;
             padding: 0;
         }
         
         .header {
-            background-color: #333;
-            color: #fff;
+            background-color: red;
+            color: white;
             text-align: center;
             padding: 20px 0;
             margin-bottom: 20px;
@@ -40,7 +41,7 @@
 
         .search-button {
             padding: 8px 15px;
-            background-color: #e30000;
+            background-color: red;
             color: #fff;
             border: none;
             border-radius: 4px;
@@ -60,7 +61,7 @@
         }
 
         .forum-item {
-            background-color: #fff;
+            background-color: grey;
             padding: 20px;
             border-radius: 8px;
             margin-bottom: 10px;
@@ -70,12 +71,12 @@
         .forum-item h2 {
             margin-top: 0;
             margin-bottom: 10px;
-            color: #333;
+            color: white;
         }
 
         .forum-item p {
             margin-top: 0;
-            color: #666;
+            color: white;
         }
 
         .add-post-form {
@@ -90,68 +91,9 @@
             resize: vertical;
         }
 
-        .add-post-form input[type="text"] {
-            width: calc(100% - 80px); /* Adjust width to accommodate the button */
-            padding: 8px 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-
-        .add-post-form button[type="submit"] {
+        .add-post-form button {
             padding: 8px 15px;
-            background-color: #4CAF50;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .comment-button {
-            padding: 8px 15px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .like-button, .dislike-button {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .like-button {
-            background-color: #007bff;
-            color: #fff;
-        }
-
-        .dislike-button {
-            background-color: #dc3545;
-            color: #fff;
-        }
-
-        .comment-box {
-            display: none;
-            margin-top: 10px;
-        }
-
-        .comment-box textarea {
-            width: calc(100% - 20px);
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            resize: vertical;
-        }
-
-        .comment-box button {
-            padding: 8px 15px;
-            background-color: #007bff;
+            background-color: red;
             color: #fff;
             border: none;
             border-radius: 4px;
@@ -162,6 +104,71 @@
         .search-results {
             margin-top: 20px;
         }
+
+        .comment-button {
+            background-color: grey;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .like-button, .dislike-button {
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .like-button {
+            background-color: blue;
+            color: white;
+        }
+
+        .dislike-button {
+            background-color: red;
+            color: white;
+        }
+
+        .comment-section {
+            display: none;
+            background-color: #333;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        .comment-section textarea {
+            width: calc(100% - 20px);
+            margin-bottom: 5px;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            resize: vertical;
+        }
+
+        .comment-section button {
+            padding: 5px 10px;
+            background-color: red;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .comment {
+            margin-bottom: 5px;
+            padding: 5px;
+            background-color: #444;
+            border-radius: 4px;
+        }
+
+        .comment p {
+            margin: 0;
+            color: white;
+        }
+
     </style>
 </head>
 <body>
@@ -217,48 +224,63 @@
             listItem.innerHTML = `
                 <h2>${title}</h2>
                 <p>${content}</p>
-                <button class="comment-button" onclick="toggleCommentBox(this)">Comment</button>
-                <div class="comment-box">
-                    <textarea placeholder="Write your comment here..."></textarea>
-                    <button onclick="postComment(this)">Post Comment</button>
+                <button class="comment-button">Comment</button>
+                <div class="comment-section" style="display: none;">
+                    <textarea class="comment-textarea" placeholder="Write a comment"></textarea>
+                    <button class="post-comment-button">Post Comment</button>
+                    <div class="comments"></div>
                 </div>
-                <button class="like-button" onclick="likePost(this)">Like</button>
-                <button class="dislike-button" onclick="dislikePost(this)">Dislike</button>
-                <span class="like-count">0</span> Likes
-                <span class="dislike-count">0</span> Dislikes
+                <button class="like-button">Like</button>
+                <button class="dislike-button">Dislike</button>
+                <div class="like-dislike-count">Likes: 0 | Dislikes: 0</div>
             `;
             forumList.appendChild(listItem);
+
+            listItem.querySelector('.comment-button').addEventListener('click', function() {
+                var commentSection = listItem.querySelector('.comment-section');
+                commentSection.style.display = commentSection.style.display === 'none' ? 'block' : 'none';
+            });
+
+            listItem.querySelector('.post-comment-button').addEventListener('click', function() {
+                var commentTextarea = listItem.querySelector('.comment-textarea');
+                var commentContent = commentTextarea.value.trim();
+                if (commentContent !== "") {
+                    addComment(listItem, commentContent);
+                    commentTextarea.value = "";
+                } else {
+                    alert("Please enter some content for your comment.");
+                }
+            });
+
+            listItem.querySelector('.like-button').addEventListener('click', function() {
+                updateLikeDislikeCount(listItem, 'like');
+            });
+
+            listItem.querySelector('.dislike-button').addEventListener('click', function() {
+                updateLikeDislikeCount(listItem, 'dislike');
+            });
         }
 
-        function toggleCommentBox(button) {
-            var commentBox = button.nextElementSibling;
-            commentBox.style.display = commentBox.style.display === "none" ? "block" : "none";
+        function addComment(parentPost, content) {
+            var commentsContainer = parentPost.querySelector('.comments');
+            var commentDiv = document.createElement('div');
+            commentDiv.classList.add('comment');
+            commentDiv.innerHTML = `<p>${content}</p>`;
+            commentsContainer.appendChild(commentDiv);
         }
 
-        function postComment(button) {
-            var commentTextArea = button.previousElementSibling;
-            var commentContent = commentTextArea.value;
-            if (commentContent.trim() !== "") {
-                // You can implement the logic to add the comment here
-                commentTextArea.value = "";
-                toggleCommentBox(button); // Hide the comment box after posting
-            } else {
-                alert("Please enter some content for your comment.");
+        function updateLikeDislikeCount(post, action) {
+            var likeDislikeCount = post.querySelector('.like-dislike-count');
+            var currentLikes = parseInt(likeDislikeCount.innerText.match(/\d+/)[0]);
+            var currentDislikes = parseInt(likeDislikeCount.innerText.match(/\d+/)[1]);
+
+            if (action === 'like') {
+                currentLikes++;
+            } else if (action === 'dislike') {
+                currentDislikes++;
             }
-        }
 
-        function likePost(button) {
-            var likeCount = button.parentElement.querySelector(".like-count");
-            var likeValue = parseInt(likeCount.textContent);
-            likeCount.textContent = likeValue + 1;
-            button.disabled = true;
-        }
-
-        function dislikePost(button) {
-            var dislikeCount = button.parentElement.querySelector(".dislike-count");
-            var dislikeValue = parseInt(dislikeCount.textContent);
-            dislikeCount.textContent = dislikeValue + 1;
-            button.disabled = true;
+            likeDislikeCount.innerText = `Likes: ${currentLikes} | Dislikes: ${currentDislikes}`;
         }
 
         document.getElementById('searchForm').addEventListener('submit', function(event) {
