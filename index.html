@@ -7,15 +7,15 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: black;
-            color: white;
+            background-color: #000;
+            color: #fff;
             margin: 0;
             padding: 0;
         }
         
         .header {
-            background-color: red;
-            color: white;
+            background-color: #e30000;
+            color: #fff;
             text-align: center;
             padding: 20px 0;
             margin-bottom: 20px;
@@ -41,7 +41,7 @@
 
         .search-button {
             padding: 8px 15px;
-            background-color: red;
+            background-color: #e30000;
             color: #fff;
             border: none;
             border-radius: 4px;
@@ -61,7 +61,7 @@
         }
 
         .forum-item {
-            background-color: grey;
+            background-color: #444;
             padding: 20px;
             border-radius: 8px;
             margin-bottom: 10px;
@@ -71,12 +71,12 @@
         .forum-item h2 {
             margin-top: 0;
             margin-bottom: 10px;
-            color: white;
+            color: #fff;
         }
 
         .forum-item p {
             margin-top: 0;
-            color: white;
+            color: #ccc;
         }
 
         .add-post-form {
@@ -93,7 +93,7 @@
 
         .add-post-form button {
             padding: 8px 15px;
-            background-color: red;
+            background-color: #e30000;
             color: #fff;
             border: none;
             border-radius: 4px;
@@ -106,69 +106,46 @@
         }
 
         .comment-button {
-            background-color: grey;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-
-        .like-button, .dislike-button {
-            border: none;
-            border-radius: 4px;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-
-        .like-button {
-            background-color: blue;
-            color: white;
-        }
-
-        .dislike-button {
-            background-color: red;
-            color: white;
-        }
-
-        .comment-section {
-            display: none;
-            background-color: #333;
-            padding: 10px;
-            border-radius: 4px;
-            margin-top: 10px;
-        }
-
-        .comment-section textarea {
-            width: calc(100% - 20px);
-            margin-bottom: 5px;
-            padding: 5px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            resize: vertical;
-        }
-
-        .comment-section button {
-            padding: 5px 10px;
-            background-color: red;
+            background-color: #e30000;
             color: #fff;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px;
         }
 
-        .comment {
-            margin-bottom: 5px;
-            padding: 5px;
-            background-color: #444;
+        .comment-container {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .comment-input {
+            width: calc(100% - 70px);
+            padding: 8px 10px;
+            border: 1px solid #ccc;
             border-radius: 4px;
+            font-size: 16px;
         }
 
-        .comment p {
-            margin: 0;
-            color: white;
+        .post-comment-button {
+            padding: 8px 15px;
+            background-color: #e30000;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
         }
 
+        .like, .dislike {
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .liked, .disliked {
+            color: #e30000;
+        }
     </style>
 </head>
 <body>
@@ -188,6 +165,7 @@
         <div class="add-post-form">
             <form id="postForm">
                 <input type="text" id="postTitle" placeholder="Title">
+                <br>
                 <textarea id="postContent" rows="4" placeholder="Write your post here..."></textarea>
                 <br>
                 <button type="submit">Post</button>
@@ -224,63 +202,20 @@
             listItem.innerHTML = `
                 <h2>${title}</h2>
                 <p>${content}</p>
-                <button class="comment-button">Comment</button>
-                <div class="comment-section" style="display: none;">
-                    <textarea class="comment-textarea" placeholder="Write a comment"></textarea>
+                <button class="like">Like</button>
+                <button class="dislike">Dislike</button>
+                <button class="comment-button" onclick="toggleComments(this)">Comment</button>
+                <div class="comment-container">
+                    <input type="text" class="comment-input" placeholder="Add a comment...">
                     <button class="post-comment-button">Post Comment</button>
-                    <div class="comments"></div>
                 </div>
-                <button class="like-button">Like</button>
-                <button class="dislike-button">Dislike</button>
-                <div class="like-dislike-count">Likes: 0 | Dislikes: 0</div>
             `;
             forumList.appendChild(listItem);
-
-            listItem.querySelector('.comment-button').addEventListener('click', function() {
-                var commentSection = listItem.querySelector('.comment-section');
-                commentSection.style.display = commentSection.style.display === 'none' ? 'block' : 'none';
-            });
-
-            listItem.querySelector('.post-comment-button').addEventListener('click', function() {
-                var commentTextarea = listItem.querySelector('.comment-textarea');
-                var commentContent = commentTextarea.value.trim();
-                if (commentContent !== "") {
-                    addComment(listItem, commentContent);
-                    commentTextarea.value = "";
-                } else {
-                    alert("Please enter some content for your comment.");
-                }
-            });
-
-            listItem.querySelector('.like-button').addEventListener('click', function() {
-                updateLikeDislikeCount(listItem, 'like');
-            });
-
-            listItem.querySelector('.dislike-button').addEventListener('click', function() {
-                updateLikeDislikeCount(listItem, 'dislike');
-            });
         }
 
-        function addComment(parentPost, content) {
-            var commentsContainer = parentPost.querySelector('.comments');
-            var commentDiv = document.createElement('div');
-            commentDiv.classList.add('comment');
-            commentDiv.innerHTML = `<p>${content}</p>`;
-            commentsContainer.appendChild(commentDiv);
-        }
-
-        function updateLikeDislikeCount(post, action) {
-            var likeDislikeCount = post.querySelector('.like-dislike-count');
-            var currentLikes = parseInt(likeDislikeCount.innerText.match(/\d+/)[0]);
-            var currentDislikes = parseInt(likeDislikeCount.innerText.match(/\d+/)[1]);
-
-            if (action === 'like') {
-                currentLikes++;
-            } else if (action === 'dislike') {
-                currentDislikes++;
-            }
-
-            likeDislikeCount.innerText = `Likes: ${currentLikes} | Dislikes: ${currentDislikes}`;
+        function toggleComments(button) {
+            var commentContainer = button.nextElementSibling;
+            commentContainer.style.display = commentContainer.style.display === 'block' ? 'none' : 'block';
         }
 
         document.getElementById('searchForm').addEventListener('submit', function(event) {
@@ -310,6 +245,26 @@
                 results.forEach(function(result) {
                     searchResultsDiv.innerHTML += result;
                 });
+            }
+        }
+
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('like') || event.target.classList.contains('dislike')) {
+                handleReaction(event.target);
+            }
+        });
+
+        function handleReaction(button) {
+            var parentPost = button.parentNode;
+            var likeButton = parentPost.querySelector('.like');
+            var dislikeButton = parentPost.querySelector('.dislike');
+
+            if (button.classList.contains('like')) {
+                likeButton.classList.toggle('liked');
+                dislikeButton.classList.remove('disliked');
+            } else if (button.classList.contains('dislike')) {
+                dislikeButton.classList.toggle('disliked');
+                likeButton.classList.remove('liked');
             }
         }
     </script>
